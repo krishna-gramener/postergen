@@ -1,0 +1,19 @@
+{
+  "templates": [
+    {
+      "name": "Poster 1",
+      "image": "templates/poster-1.webp",
+      "template": "templates/poster-1.html"
+    },
+    {
+      "name": "Poster 2",
+      "image": "templates/poster-2.webp",
+      "template": "templates/poster-2.html"
+    },
+    {
+      "name": "Poster 3",
+      "image": "templates/poster-3.webp",
+      "template": "templates/poster-3.html"
+    }
+  ]
+}
