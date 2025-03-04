@@ -12,7 +12,9 @@ const loading = /* html */ `
 `;
 
 const $templateGallery = document.getElementById("template-gallery");
+const $logoGallery = document.getElementById("logo-gallery");
 const $submitContainer = document.getElementById("submit-container");
+const $errorMessage = document.getElementById("error-message");
 const $response = document.getElementById("response");
 const $posterForm = document.getElementById("poster-form");
 const $poster = document.getElementById("poster");
@@ -23,39 +25,43 @@ const marked = new Marked();
 
 // Load configuration and render templates.
 $templateGallery.innerHTML = loading;
-const { templates } = await fetch("config.json").then((res) => res.json());
-$templateGallery.innerHTML = /* html */ `
-  <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4 justify-content-center">
-  ${templates
-    .map(
-      (template, index) => /* html */ `
-      <div class="col">
-        <div class="card h-100 template-card" data-template-id="${index}">
-          <div class="card-img-container ratio ratio-1x1 bg-body-tertiary">
-            <img src="${template.image}" class="card-img-top object-fit-contain" alt="${template.name}">
-          </div>
-          <div class="card-body">
-            <h5 class="card-title">${template.name}</h5>
-          </div>
-        </div>
-      </div>`
-    )
-    .join("")}
-  </div>
-`;
+const { templates, logos } = await fetch("config.json").then((res) => res.json());
+const sections = [
+  { type: "template", $gallery: $templateGallery, items: templates, cols: "col-12 col-sm-4" },
+  { type: "logo", $gallery: $logoGallery, items: logos, cols: "col-12 col-sm-2 col-lg-1" },
+];
 
-// Clicking on a template card selects it
-document.querySelectorAll(".template-card").forEach((card) => {
-  card.addEventListener("click", () => {
-    // Remove active class from all cards
-    document.querySelectorAll(".template-card").forEach((c) => c.classList.remove("active"));
-    // Add active class to clicked card
-    card.classList.add("active");
-    // Store selected template ID
-    const templateId = card.dataset.templateId;
-    $posterForm.dataset.selectedTemplate = templateId;
+for (const { type, $gallery, items, cols } of sections) {
+  $gallery.innerHTML = /* html */ `
+    <div class="row g-4 justify-content-center align-items-start">
+    ${items
+      .map(
+        (item, index) => /* html */ `
+        <div class="${cols}">
+          <div class="card h-100 ${type}-card" data-${type}-id="${index}">
+            <div class="card-img-container ratio ratio-1x1 bg-body-tertiary">
+              <img src="${item.image}" class="card-img-top object-fit-contain" alt="${item.name}">
+            </div>
+          </div>
+        </div>`
+      )
+      .join("")}
+    </div>
+  `;
+
+  // Clicking on a template or logo selects it
+  $gallery.querySelectorAll(`.${type}-card`).forEach((card) => {
+    card.addEventListener("click", () => {
+      // Remove active class from all cards of this type
+      $gallery.querySelectorAll(`.${type}-card`).forEach((c) => c.classList.remove("active"));
+      // Add active class to clicked card
+      card.classList.add("active");
+      // Store selected item ID
+      const itemId = card.dataset[`${type}Id`];
+      $posterForm.dataset[`selected${type.charAt(0).toUpperCase() + type.slice(1)}`] = itemId;
+    });
   });
-});
+}
 
 // Load LLM Foundry token and render the generation form
 const { token } = await fetch("https://llmfoundry.straive.com/token", { credentials: "include" }).then((res) =>
@@ -73,14 +79,25 @@ if (token) {
 $posterForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const $template = $templateGallery.querySelector(`.active[data-template-id]`);
-  if (!$template) return alert("Please select a template");
+  const $logo = $logoGallery.querySelector(`.active[data-logo-id]`);
+  if (!$template || !$logo) {
+    $errorMessage.classList.remove("d-none");
+    return;
+  } else {
+    $errorMessage.classList.add("d-none");
+  }
   const template = templates[$template.dataset.templateId];
+  const logo = logos[$logo.dataset.logoId];
 
   // Render the selected poster
   $response.innerHTML = loading;
   $downloadContainer.classList.add("d-none");
   $poster.innerHTML = await fetch(template.template).then((res) => res.text());
 
+  // Replace all logos with the selected logo
+  for (const $logo of $poster.querySelectorAll('[data-type="logo"]')) $logo.src = logo.image;
+
+  // Create the components prompt section. It'll be "data-name: data-prompt\n..."
   const componentsPrompt = [...$poster.querySelectorAll("[data-name]")]
     .map((el) => `${el.dataset.name}: ${el.dataset.prompt ?? ""}`)
     .join("\n");
@@ -94,7 +111,7 @@ $posterForm.addEventListener("submit", async (e) => {
       stream: true,
       messages: [
         { role: "system", content: e.target.system.value },
-        { role: "user", content: `${e.target.brief.value}\n\nCOMPONENTS:\n${componentsPrompt}` },
+        { role: "user", content: `Poster for ${logo.name}\n\n${e.target.brief.value}\n\nCOMPONENTS:\n${componentsPrompt}` },
       ],
     }),
   })) {

@@ -31,25 +31,25 @@
       position: absolute;
     }
 
-    /* Template card selection styles */
-    .template-card {
+    /* Template and logo card selection styles */
+    .template-card, .logo-card {
       cursor: pointer;
       transition: all 0.2s ease-in-out;
       border: 3px solid transparent;
     }
 
-    .template-card:hover {
+    .template-card:hover, .logo-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
-    .template-card.active {
+    .template-card.active, .logo-card.active {
       border-color: var(--bs-primary);
       box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.25);
       transform: translateY(-5px);
     }
 
-    .template-card.active::after {
+    .template-card.active::after, .logo-card.active::after {
       content: "✓";
       position: absolute;
       top: -10px;
@@ -104,13 +104,19 @@
   </div>
 
   <div id="template-gallery" class="container my-5"></div>
+  <div id="logo-gallery" class="container my-5"></div>
 
   <form id="poster-form" class="narrative mx-auto">
-    <div class="mb-3">
+    <div>
       <label for="brief" class="form-label d-none">Describe your poster</label>
-      <textarea id="brief" class="form-control" rows="4" placeholder="Describe your poster..." required>A Shell V-Power ad</textarea>
+      <textarea id="brief" class="form-control" rows="4" placeholder="Describe your poster..." required>Create an inspiring poster</textarea>
     </div>
-    <div class="d-grid" id="submit-container"></div>
+    <div class="d-grid mt-3" id="submit-container"></div>
+
+    <div id="error-message" class="alert alert-danger mt-3 d-none">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <strong>Note:</strong> Please select a poster and a logo.
+    </div>
 
     <div class="mt-3">
       <p>
@@ -129,7 +135,7 @@ You need to fill in the text and generate prompts for an LLM to generate images.
 
 1. Guess the user's objective in designing this poster.
 2. List 3 options for each placeholder. Next to each, list pros and cons with respect to the objective CONCISELY in 1 sentence each.
-3. Pick the option best aligned with the objective for each placeholder.
+3. Pick the option best aligned with the objective for each placeholder. (The product/category should clearly take center stage on images.)
 4. Write the result as JSON like this:
 
 ```json
