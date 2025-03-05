@@ -1,6 +1,7 @@
 import { asyncLLM } from "https://cdn.jsdelivr.net/npm/asyncllm@2";
 import { Marked } from "https://cdn.jsdelivr.net/npm/marked@13/+esm";
 import { default as html2canvas } from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.esm.js";
+import pptxgenjs from "https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/+esm";
 import { getClosestAspectRatio } from "./utils.js";
 
 const loading = /* html */ `
@@ -19,9 +20,15 @@ const $response = document.getElementById("response");
 const $posterForm = document.getElementById("poster-form");
 const $poster = document.getElementById("poster");
 const $downloadContainer = document.getElementById("download-container");
-const $download = document.getElementById("download");
+const $downloadPNG = document.getElementById("download-png");
+const $downloadPPTX = document.getElementById("download-pptx");
 
 const marked = new Marked();
+
+// Current template, logo, brief
+let template;
+let logo;
+let brief;
 
 // Load configuration and render templates.
 $templateGallery.innerHTML = loading;
@@ -86,8 +93,9 @@ $posterForm.addEventListener("submit", async (e) => {
   } else {
     $errorMessage.classList.add("d-none");
   }
-  const template = templates[$template.dataset.templateId];
-  const logo = logos[$logo.dataset.logoId];
+  template = templates[$template.dataset.templateId];
+  logo = logos[$logo.dataset.logoId];
+  brief = e.target.brief.value;
 
   // Render the selected poster
   $response.innerHTML = loading;
@@ -111,7 +119,7 @@ $posterForm.addEventListener("submit", async (e) => {
       stream: true,
       messages: [
         { role: "system", content: e.target.system.value },
-        { role: "user", content: `Poster for ${logo.name}\n\n${e.target.brief.value}\n\nCOMPONENTS:\n${componentsPrompt}` },
+        { role: "user", content: `Poster for ${logo.name}\n\n${brief}\n\nCOMPONENTS:\n${componentsPrompt}` },
       ],
     }),
   })) {
@@ -155,7 +163,7 @@ async function drawImage({ prompt, aspectRatio }) {
   return `data:${mimeType};base64,${bytesBase64Encoded}`;
 }
 
-$download.addEventListener("click", (e) => {
+$downloadPNG.addEventListener("click", (e) => {
   html2canvas($poster.firstChild, {
     backgroundColor: null,
   }).then(function (canvas) {
@@ -165,3 +173,102 @@ $download.addEventListener("click", (e) => {
     a.click();
   });
 });
+
+$downloadPPTX.addEventListener("click", (e) => {
+  const $root = $poster.firstChild;
+  const posterRect = $root.getBoundingClientRect();
+  const width = posterRect.width;
+  const height = posterRect.height;
+  const dpi = 72;
+
+  let pptx = new pptxgenjs();
+  pptx.title = `${logo.name} ${brief}. Template: ${template.name}`;
+  pptx.author = "PosterGen";
+
+  pptx.defineLayout({ name: "PosterGen", width: width / dpi, height: height / dpi });
+  pptx.layout = "PosterGen";
+
+  const slide = pptx.addSlide();
+
+  Array.from($root.children).forEach((child) => {
+    const rect = child.getBoundingClientRect();
+    const position = {
+      x: (rect.left - posterRect.left) / dpi,
+      y: (rect.top - posterRect.top) / dpi,
+      w: rect.width / dpi,
+      h: rect.height / dpi,
+    };
+
+    if (child.tagName.toLowerCase() === "img") {
+      // Calculate the displayed dimensions based on object-fit: contain
+      const imgPosition = { ...position };
+
+      // If the style has an object-fit: contain, use the natural dimensions of the image
+      if (child.style.objectFit === "contain") {
+        // Get the natural dimensions of the image
+        const naturalWidth = child.naturalWidth;
+        const naturalHeight = child.naturalHeight;
+
+        // Calculate the aspect ratio of the image
+        const imageRatio = naturalWidth / naturalHeight;
+        const containerRatio = rect.width / rect.height;
+
+        // Adjust dimensions based on object-fit: contain logic
+        if (imageRatio > containerRatio) {
+          // Image is wider than container (relative to height)
+          const displayedHeight = rect.width / imageRatio;
+          imgPosition.y += (rect.height - displayedHeight) / 2 / dpi;
+          imgPosition.h = displayedHeight / dpi;
+        } else {
+          // Image is taller than container (relative to width)
+          const displayedWidth = rect.height * imageRatio;
+          imgPosition.x += (rect.width - displayedWidth) / 2 / dpi;
+          imgPosition.w = displayedWidth / dpi;
+        }
+      }
+
+      slide.addImage({
+        ...imgPosition,
+        ...(child.src.startsWith("data:") ? { data: child.src } : { path: child.src }),
+      });
+    } else {
+      const computed = window.getComputedStyle(child);
+      const bgColor = rgbToHex(computed.backgroundColor);
+
+      // Extract transparency from rgba background if present
+      let transparency = 0;
+      const bgMatch = computed.backgroundColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([0-9.]+))?\)/);
+      if (bgMatch && bgMatch[4] !== undefined) transparency = Math.round((1 - parseFloat(bgMatch[4])) * 100);
+
+      slide.addText(child.innerText.trim(), {
+        ...position,
+        // Convert font size from pixels to inches to points (72 points = 1 inch)
+        fontSize: (parseFloat(computed.fontSize) / dpi) * 72,
+        // fontFace: computed.fontFamily,
+        color: rgbToHex(computed.color),
+        fill: { color: bgColor, transparency },
+        bold: computed.fontWeight === "bold" || parseInt(computed.fontWeight) >= 700,
+        italic: computed.fontStyle === "italic",
+        underline: computed.textDecorationLine.includes("underline"),
+        align: computed.textAlign || "left",
+      });
+    }
+  });
+
+  pptx.writeFile({ fileName: "poster.pptx" });
+});
+
+function rgbToHex(rgb) {
+  const result = rgb.match(/\d+/g);
+  if (!result) return "#000000";
+  return (
+    "#" +
+    result
+      .slice(0, 3)
+      .map((x) => {
+        let hex = parseInt(x).toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+      })
+      .join("")
+  );
+}
