@@ -29,6 +29,15 @@ const marked = new Marked();
 let template;
 let logo;
 let brief;
+let templateSize = "750x1000"; // Default template size
+
+// Add event listeners for template size radio buttons
+document.querySelectorAll('input[name="templateSize"]').forEach(radio => {
+  radio.addEventListener('change', function() {
+    templateSize = this.value;
+    console.log(`Template size changed to: ${templateSize}`);
+  });
+});
 
 // Load configuration and render templates.
 $templateGallery.innerHTML = loading;
@@ -101,6 +110,25 @@ $posterForm.addEventListener("submit", async (e) => {
   $response.innerHTML = loading;
   $downloadContainer.classList.add("d-none");
   $poster.innerHTML = await fetch(template.template).then((res) => res.text());
+  
+  // Apply the selected template size
+  const [width, height] = templateSize.split('x').map(Number);
+  const $posterRoot = $poster.firstChild;
+  $posterRoot.style.width = `${width}px`;
+  $posterRoot.style.height = `${height}px`;
+  
+  // Scale images and elements based on the new dimensions if needed
+  const originalWidth = 750; // Assuming original template width is 750px
+  const originalHeight = 1000; // Assuming original template height is 1000px
+  const scaleX = width / originalWidth;
+  const scaleY = height / originalHeight;
+  
+  // Scale background image
+  const $backgroundImg = $poster.querySelector('[data-name="background"]');
+  if ($backgroundImg) {
+    $backgroundImg.width = width;
+    $backgroundImg.height = height;
+  }
 
   // Replace all logos with the selected logo
   for (const $logo of $poster.querySelectorAll('[data-type="logo"]')) $logo.src = logo.image;
