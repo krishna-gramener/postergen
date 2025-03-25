@@ -71,9 +71,8 @@ for (const { type, $gallery, items, cols } of sections) {
 }
 
 // Load LLM Foundry token and render the generation form
-const { token } = await fetch("https://llmfoundry.straive.com/token", { credentials: "include",}).then((res) => 
-  res.json()
-);
+const { token } = await fetch("https://llmfoundry.straive.com/token", { credentials: "include"}).then((res) =>
+  res.json());
 $submitContainer.innerHTML = loading;
 if (token) {
   $submitContainer.innerHTML = /* html */ `<button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-stars me-2"></i>Generate Poster</button>`;
@@ -156,7 +155,7 @@ async function drawImage({ prompt, aspectRatio }) {
   };
   const data = await fetch("https://llmfoundry.straive.com/vertexai/google/models/imagen-3.0-generate-002:predict", {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}:postergen`},
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}:postergen` },
     body: JSON.stringify(body),
   }).then((res) => res.json());
   const { mimeType, bytesBase64Encoded } = data.predictions[0];
@@ -185,7 +184,7 @@ $downloadPPTX.addEventListener("click", (e) => {
   pptx.title = `${logo.name} ${brief}. Template: ${template.name}`;
   pptx.author = "PosterGen";
 
-  pptx.defineLayout({ name: "PosterGen",width: width / dpi,height: height / dpi});
+  pptx.defineLayout({ name: "PosterGen", width: width / dpi, height: height / dpi });
   pptx.layout = "PosterGen";
 
   const slide = pptx.addSlide();
