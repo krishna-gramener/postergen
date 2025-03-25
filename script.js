@@ -71,8 +71,7 @@ for (const { type, $gallery, items, cols } of sections) {
 }
 
 // Load LLM Foundry token and render the generation form
-const { token } = await fetch("https://llmfoundry.straive.com/token", { credentials: "include",
-}).then((res) => 
+const { token } = await fetch("https://llmfoundry.straive.com/token", { credentials: "include",}).then((res) => 
   res.json()
 );
 $submitContainer.innerHTML = loading;
