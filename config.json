@@ -6,9 +6,39 @@
       "template": "templates/poster-1.html"
     },
     {
+      "name": "Poster 1 1000x1000",
+      "image": "templates/poster-1.webp",
+      "template": "templates/poster-1-1000x1000.html"
+    },
+    {
+      "name": "Poster 1 1080x1350",
+      "image": "templates/poster-1.webp",
+      "template": "templates/poster-1-1080x1350.html"
+    },
+    {
+      "name": "Poster 1 1000x500",
+      "image": "templates/poster-1.webp",
+      "template": "templates/poster-1-1000x500.html"
+    },
+    {
       "name": "Poster 2",
       "image": "templates/poster-2.webp",
       "template": "templates/poster-2.html"
+    },
+    {
+      "name": "Poster 2 1000x1000",
+      "image": "templates/poster-2.webp",
+      "template": "templates/poster-2-1000x1000.html"
+    },
+    {
+      "name": "Poster 2 1080x1350",
+      "image": "templates/poster-2.webp",
+      "template": "templates/poster-2-1080x1350.html"
+    },
+    {
+      "name": "Poster 2 1000x500",
+      "image": "templates/poster-2.webp",
+      "template": "templates/poster-2-1000x500.html"
     },
     {
       "name": "Poster 3",
@@ -16,9 +46,39 @@
       "template": "templates/poster-3.html"
     },
     {
+      "name": "Poster 3 1000x1000",
+      "image": "templates/poster-3.webp",
+      "template": "templates/poster-3-1000x1000.html"
+    },
+    {
+      "name": "Poster 3 1080x1350",
+      "image": "templates/poster-3.webp",
+      "template": "templates/poster-3-1080x1350.html"
+    },
+    {
+      "name": "Poster 3 1000x500",
+      "image": "templates/poster-3.webp",
+      "template": "templates/poster-3-1000x500.html"
+    },
+    {
       "name": "Poster 4",
       "image": "templates/poster-4.webp",
       "template": "templates/poster-4.html"
+    },
+    {
+      "name": "Poster 4 1000x1000",
+      "image": "templates/poster-4.webp",
+      "template": "templates/poster-4-1000x1000.html"
+    },
+    {
+      "name": "Poster 4 1080x1350",
+      "image": "templates/poster-4.webp",
+      "template": "templates/poster-4-1080x1350.html"
+    },
+    {
+      "name": "Poster 4 1000x500",
+      "image": "templates/poster-4.webp",
+      "template": "templates/poster-4-1000x500.html"
     }
   ],
   "logos": [

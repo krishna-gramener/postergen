@@ -29,22 +29,23 @@ const marked = new Marked();
 let template;
 let logo;
 let brief;
-let templateSize = "750x1000"; // Default template size
-
-// Add event listeners for template size radio buttons
-document.querySelectorAll('input[name="templateSize"]').forEach(radio => {
-  radio.addEventListener('change', function() {
-    templateSize = this.value;
-    console.log(`Template size changed to: ${templateSize}`);
-  });
-});
 
 // Load configuration and render templates.
 $templateGallery.innerHTML = loading;
 const { templates, logos } = await fetch("config.json").then((res) => res.json());
 const sections = [
-  { type: "template", $gallery: $templateGallery, items: templates, cols: "col-12 col-sm-3" },
-  { type: "logo", $gallery: $logoGallery, items: logos, cols: "col-12 col-sm-2 col-lg-1" },
+  {
+    type: "template",
+    $gallery: $templateGallery,
+    items: templates,
+    cols: "col-12 col-sm-3",
+  },
+  {
+    type: "logo",
+    $gallery: $logoGallery,
+    items: logos,
+    cols: "col-12 col-sm-2 col-lg-1",
+  },
 ];
 
 for (const { type, $gallery, items, cols } of sections) {
@@ -80,9 +81,9 @@ for (const { type, $gallery, items, cols } of sections) {
 }
 
 // Load LLM Foundry token and render the generation form
-const { token } = await fetch("https://llmfoundry.straive.com/token", { credentials: "include" }).then((res) =>
-  res.json()
-);
+const { token } = await fetch("https://llmfoundry.straive.com/token", {
+  credentials: "include",
+}).then((res) => res.json());
 $submitContainer.innerHTML = loading;
 if (token) {
   $submitContainer.innerHTML = /* html */ `<button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-stars me-2"></i>Generate Poster</button>`;
@@ -110,25 +111,6 @@ $posterForm.addEventListener("submit", async (e) => {
   $response.innerHTML = loading;
   $downloadContainer.classList.add("d-none");
   $poster.innerHTML = await fetch(template.template).then((res) => res.text());
-  
-  // Apply the selected template size
-  const [width, height] = templateSize.split('x').map(Number);
-  const $posterRoot = $poster.firstChild;
-  $posterRoot.style.width = `${width}px`;
-  $posterRoot.style.height = `${height}px`;
-  
-  // Scale images and elements based on the new dimensions if needed
-  const originalWidth = 750; // Assuming original template width is 750px
-  const originalHeight = 1000; // Assuming original template height is 1000px
-  const scaleX = width / originalWidth;
-  const scaleY = height / originalHeight;
-  
-  // Scale background image
-  const $backgroundImg = $poster.querySelector('[data-name="background"]');
-  if ($backgroundImg) {
-    $backgroundImg.width = width;
-    $backgroundImg.height = height;
-  }
 
   // Replace all logos with the selected logo
   for (const $logo of $poster.querySelectorAll('[data-type="logo"]')) $logo.src = logo.image;
@@ -141,13 +123,19 @@ $posterForm.addEventListener("submit", async (e) => {
   let responseContent;
   for await (const { content } of asyncLLM("https://llmfoundry.straive.com/openai/v1/chat/completions", {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}:postergen` },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}:postergen`,
+    },
     body: JSON.stringify({
       model: "gpt-4o-mini",
       stream: true,
       messages: [
         { role: "system", content: e.target.system.value },
-        { role: "user", content: `Poster for ${logo.name}\n\n${brief}\n\nCOMPONENTS:\n${componentsPrompt}` },
+        {
+          role: "user",
+          content: `Poster for ${logo.name}\n\n${brief}\n\nCOMPONENTS:\n${componentsPrompt}`,
+        },
       ],
     }),
   })) {
@@ -180,11 +168,19 @@ $posterForm.addEventListener("submit", async (e) => {
 async function drawImage({ prompt, aspectRatio }) {
   const body = {
     instances: [{ prompt }],
-    parameters: { aspectRatio, enhancePrompt: true, sampleCount: 1, safetySetting: "block_only_high" },
+    parameters: {
+      aspectRatio,
+      enhancePrompt: true,
+      sampleCount: 1,
+      safetySetting: "block_only_high",
+    },
   };
   const data = await fetch("https://llmfoundry.straive.com/vertexai/google/models/imagen-3.0-generate-002:predict", {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}:postergen` },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}:postergen`,
+    },
     body: JSON.stringify(body),
   }).then((res) => res.json());
   const { mimeType, bytesBase64Encoded } = data.predictions[0];
@@ -213,7 +209,11 @@ $downloadPPTX.addEventListener("click", (e) => {
   pptx.title = `${logo.name} ${brief}. Template: ${template.name}`;
   pptx.author = "PosterGen";
 
-  pptx.defineLayout({ name: "PosterGen", width: width / dpi, height: height / dpi });
+  pptx.defineLayout({
+    name: "PosterGen",
+    width: width / dpi,
+    height: height / dpi,
+  });
   pptx.layout = "PosterGen";
 
   const slide = pptx.addSlide();
