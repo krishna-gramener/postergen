@@ -6,11 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PosterGen</title>
   <link rel="icon" href="https://raw.githubusercontent.com/gramener/assets/main/straive-favicon.svg" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css"
-    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" crossorigin="anonymous">
   <style>
     .narrative {
       max-inline-size: 40rem;
@@ -34,28 +32,24 @@
     }
 
     /* Template and logo card selection styles */
-    .template-card,
-    .logo-card {
+    .template-card, .logo-card {
       cursor: pointer;
       transition: all 0.2s ease-in-out;
       border: 3px solid transparent;
     }
 
-    .template-card:hover,
-    .logo-card:hover {
+    .template-card:hover, .logo-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
-    .template-card.active,
-    .logo-card.active {
+    .template-card.active, .logo-card.active {
       border-color: var(--bs-primary);
       box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.25);
       transform: translateY(-5px);
     }
 
-    .template-card.active::after,
-    .logo-card.active::after {
+    .template-card.active::after, .logo-card.active::after {
       content: "✓";
       position: absolute;
       top: -10px;
@@ -71,19 +65,6 @@
       font-weight: bold;
     }
 
-    /* Sidebar styles */
-    .sidebar {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      padding-top: 20px;
-      overflow-x: hidden;
-      overflow-y: auto;
-      border-right: 1px solid rgba(0, 0, 0, 0.1);
-      background-color: var(--bs-body-bg);
-      color: var(--bs-body-color);
-    }
-
     .form-check {
       margin-bottom: 12px;
     }
@@ -93,28 +74,6 @@
       border-color: var(--bs-primary);
     }
 
-    .sidebar h4 {
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      color: var(--bs-primary);
-      border-bottom: 1px solid var(--bs-border-color);
-      padding-bottom: 0.5rem;
-    }
-
-    .sidebar .form-check-label {
-      font-size: 0.95rem;
-    }
-
-    @media (max-width: 767.98px) {
-      .sidebar {
-        height: auto;
-        position: relative;
-        margin-bottom: 20px;
-        border-right: none;
-        border-bottom: 1px solid var(--bs-border-color);
-        padding-bottom: 1rem;
-      }
-    }
   </style>
 </head>
 
@@ -122,23 +81,18 @@
   <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
     <div class="container-fluid">
       <a class="navbar-brand" href=".">PosterGen</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <div class="nav-item dropdown ms-auto" role="group" aria-label="Toggle dark mode" title="Toggle Dark Mode">
-          <button class="dark-theme-toggle btn btn-outline-light dropdown-toggle" type="button"
-            data-bs-toggle="dropdown" aria-expanded="false" aria-label="Toggle theme (auto)">
+          <button class="dark-theme-toggle btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Toggle theme (auto)">
             <i class="bi bi-circle-half"></i> <span class="d-lg-none ms-2">Toggle theme</span>
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><button class="dropdown-item" data-bs-theme-value="light"><i class="me-2 bi bi-sun-fill"></i>
-                Light</button></li>
-            <li><button class="dropdown-item" data-bs-theme-value="dark"><i class="me-2 bi bi-moon-stars-fill"></i>
-                Dark</button></li>
-            <li><button class="dropdown-item" data-bs-theme-value="auto"><i class="me-2 bi bi-circle-half"></i>
-                Auto</button></li>
+            <li><button class="dropdown-item" data-bs-theme-value="light"><i class="me-2 bi bi-sun-fill"></i> Light</button></li>
+            <li><button class="dropdown-item" data-bs-theme-value="dark"><i class="me-2 bi bi-moon-stars-fill"></i> Dark</button></li>
+            <li><button class="dropdown-item" data-bs-theme-value="auto"><i class="me-2 bi bi-circle-half"></i> Auto</button></li>
           </ul>
         </div>
       </div>
@@ -184,8 +138,7 @@
         <form id="poster-form" class="narrative mx-auto">
           <div>
             <label for="brief" class="form-label d-none">Describe your poster</label>
-            <textarea id="brief" class="form-control" rows="4" placeholder="Describe your poster..."
-              required>Create an inspiring poster</textarea>
+            <textarea id="brief" class="form-control" rows="4" placeholder="Describe your poster..." required>Create an inspiring poster</textarea>
           </div>
           <div class="d-grid mt-3" id="submit-container"></div>
 
@@ -244,8 +197,7 @@ You need to fill in the text and generate prompts for an LLM to generate images.
   <footer class="my-5 vh-100 d-flex align-items-center justify-content-center">
     <h1 class="display-4">
       Designed by
-      <a href="https://gramener.com/"
-        class="text-reset link-offset-3 link-underline link-underline-opacity-25">Gramener</a>
+      <a href="https://gramener.com/" class="text-reset link-offset-3 link-underline link-underline-opacity-25">Gramener</a>
     </h1>
   </footer>
 
