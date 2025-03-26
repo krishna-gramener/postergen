@@ -118,37 +118,36 @@
       <div class="col-3">
           <h5 class="fw-bold text-center p-2 border-bottom">1000x500</h5>
       </div>
+    </div>
   </div>
-    <div class="row">
-      <div class="col-12">
+  
+  <div id="template-gallery" class="container my-5"></div>
+  <div id="logo-gallery" class="container my-5"></div>
 
-        <div id="template-gallery" class="my-5"></div>
-        <div id="logo-gallery" class="my-5"></div>
+  <form id="poster-form" class="narrative mx-auto">
+    <div>
+      <label for="brief" class="form-label d-none">Describe your poster</label>
+      <textarea id="brief" class="form-control" rows="4" placeholder="Describe your poster..." required>Create an inspiring poster</textarea>
+    </div>
+    <div class="d-grid mt-3" id="submit-container"></div>
 
-        <form id="poster-form" class="narrative mx-auto">
-          <div>
-            <label for="brief" class="form-label d-none">Describe your poster</label>
-            <textarea id="brief" class="form-control" rows="4" placeholder="Describe your poster..." required>Create an inspiring poster</textarea>
-          </div>
-          <div class="d-grid mt-3" id="submit-container"></div>
+    <div id="error-message" class="alert alert-danger mt-3 d-none">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <strong>Note:</strong> Please select a poster and a logo.
+    </div>
 
-          <div id="error-message" class="alert alert-danger mt-3 d-none">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            <strong>Note:</strong> Please select a poster and a logo.
-          </div>
-
-          <div class="mt-3">
-            <p>
-              <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse"
+    <div class="mt-3">
+      <p>
+        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse"
                 data-bs-target="#advancedOptions" aria-expanded="false" aria-controls="advancedOptions">
-                <i class="bi bi-gear"></i> Advanced Options
-              </button>
-            </p>
-            <div class="collapse" id="advancedOptions">
-              <div class="card card-body">
-                <div class="mb-3">
-                  <label for="system" class="form-label">System Prompt</label>
-                  <textarea name="system" id="system" class="form-control" rows="3">You are an expert poster designer.
+          <i class="bi bi-gear"></i> Advanced Options
+        </button>
+      </p>
+      <div class="collapse" id="advancedOptions">
+        <div class="card card-body">
+          <div class="mb-3">
+            <label for="system" class="form-label">System Prompt</label>
+            <textarea name="system" id="system" class="form-control" rows="3">You are an expert poster designer.
 You will be given a prompt and a set of text or image placeholders.
 You need to fill in the text and generate prompts for an LLM to generate images.
 
@@ -165,23 +164,18 @@ You need to fill in the text and generate prompts for an LLM to generate images.
 }
 ```
 </textarea>
-                </div>
-              </div>
-            </div>
           </div>
-        </form>
-
-        <div id="response" class="narrative my-5 mx-auto"></div>
-
-        <div id="poster" class="mx-auto my-5 position-relative"></div>
-        <div id="download-container" class="d-flex justify-content-center align-items-center my-5 d-none">
-          <button type="button" class="btn btn-lg btn-success mx-2" id="download-png"><i class="bi bi-card-image"></i>
-            Download PNG</button>
-          <button type="button" class="btn btn-lg btn-success mx-2" id="download-pptx"><i
-              class="bi bi-file-slides-fill"></i> Download PPTX</button>
         </div>
       </div>
     </div>
+  </form>
+
+  <div id="response" class="narrative my-5 mx-auto"></div>
+
+  <div id="poster" class="mx-auto my-5 position-relative"></div>
+  <div id="download-container" class="d-flex justify-content-center align-items-center my-5 d-none">
+    <button type="button" class="btn btn-lg btn-success mx-2" id="download-png"><i class="bi bi-card-image"></i> Download PNG</button>
+    <button type="button" class="btn btn-lg btn-success mx-2" id="download-pptx"><i class="bi bi-file-slides-fill"></i> Download PPTX</button>
   </div>
 
   <footer class="my-5 vh-100 d-flex align-items-center justify-content-center">
