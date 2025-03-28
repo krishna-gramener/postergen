@@ -3,82 +3,114 @@
     {
       "name": "Poster 1",
       "image": "templates/poster-1.webp",
-      "template": "templates/poster-1.html"
+      "type": "poster-1",
+      "width": 750,
+      "height": 1000
     },
     {
       "name": "Poster 1 1000x1000",
       "image": "templates/poster-1.webp",
-      "template": "templates/poster-1-1000x1000.html"
+      "type": "poster-1",
+      "width": 1000,
+      "height": 1000
     },
     {
       "name": "Poster 1 1080x1350",
       "image": "templates/poster-1.webp",
-      "template": "templates/poster-1-1080x1350.html"
+      "type": "poster-1",
+      "width": 1080,
+      "height": 1350
     },
     {
       "name": "Poster 1 1000x500",
       "image": "templates/poster-1.webp",
-      "template": "templates/poster-1-1000x500.html"
+      "type": "poster-1",
+      "width": 1000,
+      "height": 500
     },
     {
       "name": "Poster 2",
       "image": "templates/poster-2.webp",
-      "template": "templates/poster-2.html"
+      "type": "poster-2",
+      "width": 1200,
+      "height": 675
     },
     {
       "name": "Poster 2 1000x1000",
       "image": "templates/poster-2.webp",
-      "template": "templates/poster-2-1000x1000.html"
+      "type": "poster-2",
+      "width": 1000,
+      "height": 1000
     },
     {
       "name": "Poster 2 1080x1350",
       "image": "templates/poster-2.webp",
-      "template": "templates/poster-2-1080x1350.html"
+      "type": "poster-2",
+      "width": 1080,
+      "height": 1350
     },
     {
       "name": "Poster 2 1000x500",
       "image": "templates/poster-2.webp",
-      "template": "templates/poster-2-1000x500.html"
+      "type": "poster-2",
+      "width": 1000,
+      "height": 500
     },
     {
       "name": "Poster 3",
       "image": "templates/poster-3.webp",
-      "template": "templates/poster-3.html"
+      "type": "poster-3",
+      "width": 750,
+      "height": 1000
     },
     {
       "name": "Poster 3 1000x1000",
       "image": "templates/poster-3.webp",
-      "template": "templates/poster-3-1000x1000.html"
+      "type": "poster-3",
+      "width": 1000,
+      "height": 1000
     },
     {
       "name": "Poster 3 1080x1350",
       "image": "templates/poster-3.webp",
-      "template": "templates/poster-3-1080x1350.html"
+      "type": "poster-3",
+      "width": 1080,
+      "height": 1350
     },
     {
       "name": "Poster 3 1000x500",
       "image": "templates/poster-3.webp",
-      "template": "templates/poster-3-1000x500.html"
+      "type": "poster-3",
+      "width": 1000,
+      "height": 500
     },
     {
       "name": "Poster 4",
       "image": "templates/poster-4.webp",
-      "template": "templates/poster-4.html"
+      "type": "poster-4",
+      "width": 750,
+      "height": 1000
     },
     {
       "name": "Poster 4 1000x1000",
       "image": "templates/poster-4.webp",
-      "template": "templates/poster-4-1000x1000.html"
+      "type": "poster-4",
+      "width": 1000,
+      "height": 1000
     },
     {
       "name": "Poster 4 1080x1350",
       "image": "templates/poster-4.webp",
-      "template": "templates/poster-4-1080x1350.html"
+      "type": "poster-4",
+      "width": 1080,
+      "height": 1350
     },
     {
       "name": "Poster 4 1000x500",
       "image": "templates/poster-4.webp",
-      "template": "templates/poster-4-1000x500.html"
+      "type": "poster-4",
+      "width": 1000,
+      "height": 500
     }
   ],
   "logos": [

@@ -3,6 +3,7 @@ import { Marked } from "https://cdn.jsdelivr.net/npm/marked@13/+esm";
 import { default as html2canvas } from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.esm.js";
 import pptxgenjs from "https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/+esm";
 import { getClosestAspectRatio } from "./utils.js";
+import { generatePosterTemplate } from "./templates/poster-templates.js";
 
 const loading = /* html */ `
   <div class="d-flex justify-content-center align-items-center">
@@ -100,7 +101,9 @@ $posterForm.addEventListener("submit", async (e) => {
   // Render the selected poster
   $response.innerHTML = loading;
   $downloadContainer.classList.add("d-none");
-  $poster.innerHTML = await fetch(template.template).then((res) => res.text());
+
+  // Use the dynamic template generator
+  $poster.innerHTML = generatePosterTemplate(template.type, template.width, template.height);
 
   // Replace all logos with the selected logo
   for (const $logo of $poster.querySelectorAll('[data-type="logo"]')) $logo.src = logo.image;
