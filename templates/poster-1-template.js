@@ -14,25 +14,10 @@ const poster1Template = (width, height) => {
   const widthScale = width / baseWidth;
   const heightScale = height / baseHeight;
   
-  // Calculate scaled dimensions for all elements
-  const chevronTop = Math.round(230 * heightScale);
-  const chevronWidth = Math.round(867 * widthScale);
-  const chevronHeight = Math.round(180 * heightScale);
-  
-  const titleLeft = Math.round(100 * widthScale);
-  const titleTop = Math.round(250 * heightScale);
-  const titleWidth = Math.round(800 * widthScale);
-  const titleFontSize = Math.round(64 * Math.min(widthScale, heightScale));
-  
-  const subtitleLeft = Math.round(100 * widthScale);
-  const subtitleTop = Math.round(350 * heightScale);
-  const subtitleWidth = Math.round(800 * widthScale);
-  const subtitleFontSize = Math.round(32 * Math.min(widthScale, heightScale));
-  
-  const logoWidth = Math.round(267 * widthScale);
-  const logoHeight = Math.round(133 * heightScale);
-  const logoRight = Math.round(67 * widthScale);
-  const logoTop = Math.round(800 * heightScale);
+  // Calculate scaled dimensions for elements used multiple times
+  const logoWidth = 267 * widthScale;
+  const logoHeight = 133 * heightScale;
+  const logoTop = 800 * heightScale;
   
   // Adjust logo position for very short posters
   const adjustedLogoTop = Math.min(logoTop, height - logoHeight - 20);
@@ -52,9 +37,9 @@ const poster1Template = (width, height) => {
     style="
       position: absolute;
       left: 0px;
-      top: ${chevronTop}px;
-      width: ${chevronWidth}px;
-      height: ${chevronHeight}px;
+      top: ${230 * heightScale}px;
+      width: ${867 * widthScale}px;
+      height: ${180 * heightScale}px;
       background-color: rgba(0, 0, 0, 0.4);
       clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%);
       z-index: 1;
@@ -66,10 +51,10 @@ const poster1Template = (width, height) => {
     data-prompt="Large title of the poster (2-5 words)"
     style="
       position: absolute;
-      left: ${titleLeft}px;
-      top: ${titleTop}px;
-      width: ${titleWidth}px;
-      font-size: ${titleFontSize}px;
+      left: ${100 * widthScale}px;
+      top: ${250 * heightScale}px;
+      width: ${800 * widthScale}px;
+      font-size: ${64 * Math.min(widthScale, heightScale)}px;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Noto Sans, Liberation Sans, Arial,
         sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
       font-weight: bold;
@@ -84,10 +69,10 @@ const poster1Template = (width, height) => {
     data-prompt="Subtitle of the poster (4-8 words)"
     style="
       position: absolute;
-      left: ${subtitleLeft}px;
-      top: ${subtitleTop}px;
-      width: ${subtitleWidth}px;
-      font-size: ${subtitleFontSize}px;
+      left: ${100 * widthScale}px;
+      top: ${350 * heightScale}px;
+      width: ${800 * widthScale}px;
+      font-size: ${32 * Math.min(widthScale, heightScale)}px;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Noto Sans, Liberation Sans, Arial,
         sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
       font-weight: bold;
@@ -102,7 +87,7 @@ const poster1Template = (width, height) => {
     width="${logoWidth}"
     height="${logoHeight}"
     src="https://placehold.co/${logoWidth}x${logoHeight}/white/black"
-    style="position: absolute; right: ${logoRight}px; top: ${adjustedLogoTop}px; object-fit: contain"
+    style="position: absolute; right: ${67 * widthScale}px; top: ${adjustedLogoTop}px; object-fit: contain"
   />
 </div>`;
 };
