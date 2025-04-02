@@ -3,7 +3,6 @@ import { Marked } from "https://cdn.jsdelivr.net/npm/marked@13/+esm";
 import { default as html2canvas } from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.esm.js";
 import pptxgenjs from "https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/+esm";
 import { getClosestAspectRatio } from "./utils.js";
-import { generatePosterTemplate } from "./templates/poster-templates.js";
 
 const loading = /* html */ `
   <div class="d-flex justify-content-center align-items-center">
@@ -73,7 +72,7 @@ for (const { type, $gallery, items, cols } of sections) {
 }
 
 // Load LLM Foundry token and render the generation form
-const { token } = await fetch("https://llmfoundry.straive.com/token", { credentials: "include"}).then((res) =>
+const { token } = await fetch("https://llmfoundry.straive.com/token", { credentials: "include" }).then((res) =>
   res.json()
 );
 $submitContainer.innerHTML = loading;
