@@ -13,6 +13,7 @@ const loading = /* html */ `
   </div>
 `;
 
+const $aspectRatio = document.querySelector("#aspect-ratio");
 const $templateGallery = document.getElementById("template-gallery");
 const $logoGallery = document.getElementById("logo-gallery");
 const $submitContainer = document.getElementById("submit-container");
@@ -98,12 +99,16 @@ $posterForm.addEventListener("submit", async (e) => {
   logo = logos[$logo.dataset.logoId];
   brief = e.target.brief.value;
 
-  // Render the selected poster
+  // Show a loading icon while awaiting poster generation
   $response.innerHTML = loading;
   $downloadContainer.classList.add("d-none");
 
-  // Use the dynamic template generator
-  $poster.innerHTML = generatePosterTemplate(template.type, template.width, template.height);
+  // Get the current aspect ratio
+  const $option = $aspectRatio.querySelector(`option[value="${$aspectRatio.value}"]`);
+  const { width, height } = $option.dataset;
+  // Import and execute the template
+  const posterFunction = (await import(`./templates/${template.id}.js`)).default;
+  $poster.innerHTML = posterFunction(width, height);
 
   // Replace all logos with the selected logo
   for (const $logo of $poster.querySelectorAll('[data-type="logo"]')) $logo.src = logo.image;
