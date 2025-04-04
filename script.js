@@ -36,7 +36,6 @@ const marked = new Marked();
 let template;
 let logo;
 let brief;
-let currentImage = null; // Current image being worked on
 
 // Load configuration and render templates.
 $templateGallery.innerHTML = loading;
@@ -274,14 +273,6 @@ function addMessageToConversation(role, content, isLoading = false) {
   $conversationHistory.scrollTop = $conversationHistory.scrollHeight;
   
   return messageId;
-}
-
-// Function to remove a message from the conversation
-function removeMessage(messageId) {
-  const messageElement = document.getElementById(`msg-${messageId}`);
-  if (messageElement) {
-    messageElement.remove();
-  }
 }
 
 async function enhanceImage({ originalImage, prompt }) {
