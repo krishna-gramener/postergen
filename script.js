@@ -165,7 +165,10 @@ $posterForm.addEventListener("submit", async (e) => {
   $imageEnhancementContainer.classList.remove("d-none");
 
   // Add initial message to conversation
-  addMessageToConversation("system", "I can help enhance the images in your poster. Just describe what changes you'd like to make.");
+  addMessageToConversation(
+    "system",
+    "I can help enhance the images in your poster. Just describe what changes you'd like to make."
+  );
 });
 
 async function drawImage({ prompt, aspectRatio }) {
@@ -182,85 +185,14 @@ async function drawImage({ prompt, aspectRatio }) {
   return `data:${mimeType};base64,${bytesBase64Encoded}`;
 }
 
-// Handle enhance image button click
-$enhanceImageBtn.addEventListener("click", async () => {
-  const userPrompt = $enhancementPrompt.value.trim();
-  if (!userPrompt) return;
-
-  // Add user message and clear input
-  addMessageToConversation("user", userPrompt);
-  $enhancementPrompt.value = "";
-  
-  // Add loading message
-  const loadingMsgId = addMessageToConversation("system", "Enhancing image...", true);
-
-  try {
-    // Get first image and enhance it
-    const image = $poster.querySelector("img");
-    const enhancedImageSrc = await enhanceImage({
-      originalImage: image.src,
-      prompt: userPrompt
-    });
-
-    // Update image and show success message
-    image.src = enhancedImageSrc;
-    
-    // Replace only the loading message with success message
-    const successMsg = "Image enhanced successfully. Anything else you'd like to change?";
-    const loadingElement = document.getElementById(`msg-${loadingMsgId}`);
-    if (loadingElement) {
-      const iconClass = "bi-robot";
-      const bgClass = "bg-success";
-      
-      loadingElement.innerHTML = `
-        <div class="d-flex align-items-center">
-          <div class="message-avatar ${bgClass} text-white rounded-circle p-2 me-2 d-flex align-items-center justify-content-center" 
-               style="width: 32px; height: 32px; min-width: 32px;">
-            <i class="bi ${iconClass}"></i>
-          </div>
-          <div class="message-content p-2 rounded">
-            ${successMsg}
-          </div>
-        </div>`;
-    }
-  } catch (error) {
-    console.error("Error enhancing image:", error);
-    
-    // Replace only the loading message with error message
-    const errorMsg = `Error: ${error.message}`;
-    const loadingElement = document.getElementById(`msg-${loadingMsgId}`);
-    if (loadingElement) {
-      const iconClass = "bi-robot";
-      const bgClass = "bg-success";
-      
-      loadingElement.innerHTML = `
-        <div class="d-flex align-items-center">
-          <div class="message-avatar ${bgClass} text-white rounded-circle p-2 me-2 d-flex align-items-center justify-content-center" 
-               style="width: 32px; height: 32px; min-width: 32px;">
-            <i class="bi ${iconClass}"></i>
-          </div>
-          <div class="message-content p-2 rounded">
-            ${errorMsg}
-          </div>
-        </div>`;
-    }
-  }
-});
-
-// Function to add a message to the conversation history
-function addMessageToConversation(role, content, isLoading = false) {
-  const messageId = Date.now().toString();
-  const messageElement = document.createElement("div");
-  messageElement.id = `msg-${messageId}`;
-  messageElement.className = `message ${role}-message mb-2`;
-  
+// Utility function for creating message HTML
+function createMessageHTML(content, role, isLoading = false) {
   const iconClass = role === "user" ? "bi-person-fill" : "bi-robot";
   const bgClass = role === "user" ? "bg-primary" : "bg-success";
   const loadingSpinner = isLoading ? `<div class="spinner-border spinner-border-sm me-2" role="status"></div>` : "";
-  
-  messageElement.innerHTML = `
+  return `
     <div class="d-flex align-items-center">
-      <div class="message-avatar ${bgClass} text-white rounded-circle p-2 me-2 d-flex align-items-center justify-content-center" 
+      <div class="message-avatar ${bgClass} text-white rounded-circle p-2 me-2 d-flex align-items-center justify-content-center"
            style="width: 32px; height: 32px; min-width: 32px;">
         <i class="bi ${iconClass}"></i>
       </div>
@@ -268,31 +200,65 @@ function addMessageToConversation(role, content, isLoading = false) {
         ${loadingSpinner}${content}
       </div>
     </div>`;
-    
-  $conversationHistory.appendChild(messageElement);
+}
+
+function addMessageToConversation(role, content, isLoading = false) {
+  const messageId = Date.now().toString();
+  const msg = `
+    <div id="msg-${messageId}" class="message ${role}-message mb-2">${createMessageHTML(content, role, isLoading)}</div>
+  `;
+  $conversationHistory.insertAdjacentHTML("beforeend", msg);
   $conversationHistory.scrollTop = $conversationHistory.scrollHeight;
-  
   return messageId;
 }
+
+$enhanceImageBtn.addEventListener("click", async () => {
+  const userPrompt = $enhancementPrompt.value.trim();
+  if (!userPrompt) return;
+
+  addMessageToConversation("user", userPrompt);
+  $enhancementPrompt.value = "";
+  const loadingMsgId = addMessageToConversation("system", "Enhancing image...", true);
+
+  try {
+    const image = $poster.querySelector("img");
+    const enhancedImageSrc = await enhanceImage({
+      originalImage: image.src,
+      prompt: userPrompt,
+    });
+
+    image.src = enhancedImageSrc;
+    const msg = "Image enhanced successfully. Anything else you'd like to change?";
+    document.getElementById(`msg-${loadingMsgId}`).innerHTML = createMessageHTML(msg, "system");
+  } catch (error) {
+    console.error("Error enhancing image:", error);
+    document.getElementById(`msg-${loadingMsgId}`).innerHTML = createMessageHTML(`Error: ${error.message}`, "system");
+  }
+});
 
 async function enhanceImage({ originalImage, prompt }) {
   // Extract base64 data if it's a data URL
   const imageData = originalImage.startsWith("data:") ? originalImage.split(",")[1] || originalImage : originalImage;
 
-  const response = await fetch("https://llmfoundry.straive.com/gemini/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}:postergen` },
-    body: JSON.stringify({
-      contents: [{
-        role: "user",
-        parts: [
-          { text: `Enhance this image with the following instructions: ${prompt}` },
-          { inline_data: { mime_type: "image/png", data: imageData } }
-        ]
-      }],
-      generationConfig: { responseModalities: ["Text", "Image"] }
-    })
-  }).then(res => res.json());
+  const response = await fetch(
+    "https://llmfoundry.straive.com/gemini/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}:postergen` },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: `Enhance this image with the following instructions: ${prompt}` },
+              { inline_data: { mime_type: "image/png", data: imageData } },
+            ],
+          },
+        ],
+        generationConfig: { responseModalities: ["Text", "Image"] },
+      }),
+    }
+  ).then((res) => res.json());
 
   const { mimeType, data } = response.candidates[0].content.parts[0].inlineData;
   return `data:${mimeType};base64,${data}`;
