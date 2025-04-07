@@ -118,12 +118,6 @@ $posterForm.addEventListener("submit", async (e) => {
   // Replace all logos with the selected logo
   for (const $logo of $poster.querySelectorAll('[data-type="logo"]')) $logo.src = logo.image;
   
-  // Make all text elements editable
-  $poster.querySelectorAll('div[data-name]').forEach(element => {
-    if (element.tagName.toLowerCase() !== 'img') {
-      element.setAttribute('contentEditable', 'true');
-    }
-  });
 
   // Create the components prompt section. It'll be "data-name: data-prompt\n..."
   const componentsPrompt = [...$poster.querySelectorAll("[data-name]")]
