@@ -168,7 +168,7 @@ $posterForm.addEventListener("submit", async (e) => {
   // Add initial message to conversation
   addMessageToConversation(
     "system",
-    "I can help enhance the images in your poster. Just describe what changes you'd like to make."
+    "I can help enhance your poster. You can ask me to modify images or edit text content. Just describe what changes you'd like to make."
   );
 });
 
@@ -219,23 +219,114 @@ $enhanceImageBtn.addEventListener("click", async () => {
 
   addMessageToConversation("user", userPrompt);
   $enhancementPrompt.value = "";
-  const loadingMsgId = addMessageToConversation("system", "Enhancing image...", true);
+  const loadingMsgId = addMessageToConversation("system", "Processing your request...", true);
 
   try {
-    const image = $poster.querySelector("img");
-    const enhancedImageSrc = await enhanceImage({
-      originalImage: image.src,
-      prompt: userPrompt,
-    });
-
-    image.src = enhancedImageSrc;
-    const msg = "Image enhanced successfully. Anything else you'd like to change?";
-    document.getElementById(`msg-${loadingMsgId}`).innerHTML = createMessageHTML(msg, "system");
+    // Get text fields and determine function to call
+    const availableTextFields = [...$poster.querySelectorAll('[data-name]:not(img)')]
+      .map(el => el.dataset.name);
+    
+    const functionDecision = await decideFunctionToCall(userPrompt, availableTextFields);
+    let message = "";
+    
+    // Process based on function type
+    if (functionDecision.function === "updateText") {
+      await updateTextContent(functionDecision.type, functionDecision.content);
+      message = "Text updated successfully.";
+    } else if (functionDecision.function === "enhanceImage") {
+      const image = $poster.querySelector("img");
+      image.src = await enhanceImage({
+        originalImage: image.src,
+        prompt: functionDecision.prompt,
+      });
+      message = "Image enhanced successfully.";
+    } else {
+      message = "I'm not sure how to process that request. Please try again with a clearer instruction.";
+    }
+    
+    // Update message and add follow-up question
+    document.getElementById(`msg-${loadingMsgId}`).innerHTML = 
+      createMessageHTML(message + " Anything else you'd like to change?", "system");
   } catch (error) {
-    console.error("Error enhancing image:", error);
-    document.getElementById(`msg-${loadingMsgId}`).innerHTML = createMessageHTML(`Error: ${error.message}`, "system");
+    console.error("Error processing request:", error);
+    document.getElementById(`msg-${loadingMsgId}`).innerHTML = 
+      createMessageHTML(`Error: ${error.message}`, "system");
   }
 });
+
+// Function to decide which function to call based on user prompt
+async function decideFunctionToCall(prompt, availableTextFields = []) {
+  const response = await fetch(
+    "https://llmfoundry.straive.com/openai/v1/chat/completions",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}:postergen` },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        tools: [
+          {
+            type: "function",
+            function: {
+              name: "updateText",
+              description: "Update text content in the poster",
+              parameters: {
+                type: "object",
+                properties: {
+                  type: { type: "string", description: `Type of text element  ${JSON.stringify(availableTextFields)} etc` },
+                  content: { type: "string", description: "New content for the text element" }
+                },
+                required: ["type", "content"]
+              }
+            }
+          },
+          {
+            type: "function",
+            function: {
+              name: "enhanceImage",
+              description: "Enhance an image in the poster",
+              parameters: {
+                type: "object",
+                properties: {
+                  prompt: { type: "string", description: "Instructions for enhancing the image" }
+                },
+                required: ["prompt"]
+              }
+            }
+          }
+        ],
+        tool_choice: "auto"
+      }),
+    }
+  ).then((res) => res.json());
+
+  // Extract tool call if available
+  const toolCall = response.choices?.[0]?.message?.tool_calls?.[0];
+  
+  if (!toolCall) return { function: "unknown" };
+  
+  const { name: functionName } = toolCall.function;
+  const args = JSON.parse(toolCall.function.arguments);
+  
+  // Map function calls to return objects
+  const functionMap = {
+    updateText: { function: "updateText", type: args.type, content: args.content },
+    enhanceImage: { function: "enhanceImage", prompt: args.prompt }
+  };
+  
+  return functionMap[functionName] || { function: "unknown" };
+}
+
+// Function to update text content
+async function updateTextContent(type, content) {
+  const $el = $poster.querySelector(`[data-name="${type}"]`);
+  
+  if (!$el) throw new Error(`Element with data-name="${type}" not found`);
+  if ($el.tagName === "IMG") throw new Error(`Cannot update text for an image element`);
+  
+  $el.textContent = content;
+  return true;
+}
 
 async function enhanceImage({ originalImage, prompt }) {
   // Extract base64 data if it's a data URL
@@ -260,8 +351,7 @@ async function enhanceImage({ originalImage, prompt }) {
       }),
     }
   ).then((res) => res.json());
-
-  const { mimeType, data } = response.candidates[0].content.parts[0].inlineData;
+  const { mimeType, data } = response.candidates?.[0]?.content?.parts?.[0]?.inlineData || {};
   return `data:${mimeType};base64,${data}`;
 }
 
